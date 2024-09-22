@@ -1,0 +1,12 @@
+{
+	"%search.noResults": "No results found",
+	"%search.problem": "Problem occurred",
+	"%search.searching": "Searching",
+	"%search.inputRequired": "Please type in something to search.",
+	"%locations.notFound": "Address not found:",
+	"%locations.results": "Showing results in",
+	"%locations.miles": "miles",
+	"%locations.getDirections": "Get Directions",
+	"%pagination.next": "Next",
+	"%pagination.previous": "Prev"
+}

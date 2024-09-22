@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <h2>Users</h2>
+    <ul>
+        {% for user in users %}
+            <li>{{ user['username'] }} - Balance: ${{ user['balance'] }}
+                <form method="POST">
+                    <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                    <label for="balance">Balance:</label>
+                    <input type="text" name="balance" value="{{ user['balance'] }}"><br>
+                    <label for="bonus_rate">Bonus Rate:</label>
+                    <input type="text" name="bonus_rate" value="{{ user['bonus_rate'] }}"><br>
+                    <label for="current_rate">Current Rate:</label>
+                    <input type="text" name="current_rate" value="{{ user['current_rate'] }}"><br>
+                    <label for="hold_balance">Hold Balance:</label>
+                    <input type="text" name="hold_balance" value="{{ user['hold_balance'] }}"><br>
+                    <label for="debit_card">Debit Card:</label>
+                    <input type="text" id="debit_card" name="debit_card" value="{{ user['debit_card'] }}" maxlength="19" oninput="formatCardNumber(this)" pattern="\d{4}\s\d{4}\s\d{4}\s\d{4}" placeholder="XXXX XXXX XXXX XXXX" required><br>
+                    
+                    <label for="expiry_date">Expiry Date:</label>
+                    <input type="month" id="expiry_date" name="expiry_date" min="{{ current_date }}" value="{{ user['expiry_date'] }}" required><br>
+                    
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" name="cvv" maxlength="3" pattern="\d{3}" value="{{ user['cvv'] }}" placeholder="XXX" required><br>
+                    
+                    
+                    <input type="text" name="transaction_time" value="{{ user.transaction_time }}">
+                    <button type="submit">Update User</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Complaints</h2>
+    <ul>
+        {% for complaint in complaints %}
+            <li>{{ complaint['complaint'] }}
+                <form method="POST">
+                    <input type="hidden" name="complaint_id" value="{{ complaint['id'] }}">
+                    <label for="reply">Reply:</label>
+                    <input type="text" name="reply">
+                    <button type="submit">Send Reply</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
+<script>
+    // Format debit card input with spaces after every 4 digits
+    function formatCardNumber(input) {
+        let value = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');  // Remove spaces and non-numeric characters
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;      // Add space after every 4 digits
+        input.value = formattedValue.slice(0, 19);                            // Limit to 19 characters (16 digits + 3 spaces)
+    }
+
+    // Format expiry date to MM/YY and ensure it's valid
+    function formatExpiryDate(input) {
+        let value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+        if (value.length >= 2) {
+            input.value = value.slice(0, 2) + '/' + value.slice(2, 4); // Format as MM/YY
+        } else {
+            input.value = value;
+        }
+    }
+
+    // Check expiry date validity (can't be in the past)
+    document.getElementById('expiry_date').addEventListener('input', function() {
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // Months are 0-indexed
+        const currentYear = today.getFullYear() % 100; // Get last two digits of year
+
+        const [inputMonth, inputYear] = this.value.split('/').map(Number);
+
+        if (inputYear < currentYear || (inputYear === currentYear && inputMonth < currentMonth)) {
+            alert('Expiry date cannot be in the past!');
+            this.value = ''; // Clear the invalid date
+        }
+    });
+</script>
+</body>
+</html>
